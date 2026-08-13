@@ -1,0 +1,13 @@
+.mindful-merge-warning {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--borderColor-attention-emphasis, #9a6700);
+  border-radius: 6px;
+  color: var(--fgColor-default, #1f2328);
+  background: var(--bgColor-attention-muted, #fff8c5);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}

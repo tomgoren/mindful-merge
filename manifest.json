@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Mindful Merge",
+  "version": "1.0.0",
+  "description": "Warns reviewers before approving a GitHub pull request with auto-merge enabled.",
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/*/pull/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
