@@ -19,7 +19,7 @@ The extension requests no API, token, OAuth, storage, or backend access. Its con
 
 ## Detection
 
-For users allowed to manage auto-merge, GitHub renders a visible **Disable auto-merge** button in the pull request merge area while auto-merge is active. Mindful Merge detects that exact reverse-action label in the existing page DOM. This is simpler and less invasive than calling GitHub's REST or GraphQL API, and it avoids requiring credentials.
+For users allowed to manage auto-merge, GitHub may render a visible **Disable auto-merge** button in the pull request merge area while auto-merge is active. Mindful Merge uses that as a fast positive signal. Because reviews are normally submitted from the Files view, where GitHub does not mount the merge area, the extension also fetches and inspects the canonical Conversation page when **Approve** is selected. It uses the control when available; otherwise, it reconciles the ordered **enabled auto-merge** and **disabled auto-merge** timeline events and uses the latest event as the current state. This is a same-origin HTML request using the existing GitHub session, not a GitHub API call, and requires no token or additional permission.
 
 The review UI is currently transitioning between implementations. The extension supports both semantic form contracts:
 
@@ -33,12 +33,12 @@ The optional submit-button annotation is intentionally omitted. GitHub's current
 ## Limitations
 
 - Detection depends on GitHub's English UI text **Disable auto-merge**. It will not detect the state when GitHub is displayed in another language.
-- GitHub only exposes **Disable auto-merge** to repository writers and pull request authors. A reviewer who can approve but cannot manage auto-merge may not see a warning. GitHub's timeline entry for enabling auto-merge is not used as a fallback because it remains after auto-merge is disabled and is therefore not a reliable current-state signal.
+- GitHub only exposes **Disable auto-merge** to repository writers and pull request authors. For other reviewers, detection depends on GitHub retaining both enable and disable events in chronological DOM order on the Conversation page.
 - GitHub does not publish a stable DOM API. If it changes the auto-merge label or review form semantics, the selectors may need updating.
-- The auto-merge control must be rendered in the page DOM. A GitHub UI experiment that omits or virtualizes it could prevent detection.
+- The auto-merge control must be rendered in the Conversation page HTML for the current user. A GitHub UI experiment that omits or virtualizes it could prevent detection.
 - GitHub Enterprise Server and custom GitHub domains are not included in the manifest.
 
-Using the pull request API would provide a more authoritative, locale-independent signal, but would add network access and authentication concerns. DOM inspection is the least invasive tradeoff for this convenience utility.
+Using the pull request API would provide a more authoritative, locale-independent signal, but would add API access and authentication concerns. Inspecting GitHub's existing HTML is the least invasive tradeoff for this convenience utility.
 
 ## Manual Test
 
@@ -50,3 +50,33 @@ Using the pull request API would provide a more authoritative, locale-independen
 6. Re-enable auto-merge and confirm only one warning appears even after opening and closing the dialog repeatedly.
 7. Navigate to another pull request without a full reload and confirm the warning reflects that PR's state.
 8. Submit an approval and confirm the extension neither blocks nor delays it.
+
+## Automated Test
+
+Run the dependency-free DOM regression tests with:
+
+```sh
+node --test content.test.js
+```
+
+## Diagnostics
+
+Add `?mindful_merge_debug=1` to a pull request URL and refresh the page. For example:
+
+```text
+https://github.com/OWNER/REPOSITORY/pull/NUMBER/changes?mindful_merge_debug=1
+```
+
+A fixed **Mindful Merge diagnostics** panel appears in the lower-right corner. Open the review dialog and select **Approve**, but do not submit the review. The panel reports:
+
+- the loaded extension version and current path,
+- how many review dialogs and Approve inputs were found,
+- whether Approve is currently checked,
+- the detected auto-merge state and its source,
+- whether the warning was inserted.
+
+If the panel does not appear at all, the content script was not injected. Confirm the extension version at `chrome://extensions`, reload the extension, and refresh the GitHub tab. The same diagnostic state is also exposed on the page's root element as `data-mindful-merge-debug`.
+
+## License
+
+Mindful Merge is available under the [MIT License](LICENSE).
