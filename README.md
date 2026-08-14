@@ -10,6 +10,10 @@ The extension is informational only. It does not block, delay, or modify review 
 
 ## Install
 
+[![Available in the Chrome Web Store](assets/chrome-web-store-badge.png)](https://chromewebstore.google.com/detail/mindful-merge/micckhmamhpcnlnjanbdnkcdhkjpdokp)
+
+For local development, install the extension unpacked:
+
 1. Open `chrome://extensions` in Chrome.
 2. Enable **Developer mode**.
 3. Click **Load unpacked**.
@@ -76,6 +80,10 @@ A fixed **Mindful Merge diagnostics** panel appears in the lower-right corner. O
 - whether the warning was inserted.
 
 If the panel does not appear at all, the content script was not injected. Confirm the extension version at `chrome://extensions`, reload the extension, and refresh the GitHub tab. The same diagnostic state is also exposed on the page's root element as `data-mindful-merge-debug`.
+
+## AI Disclosure
+
+The bulk of this project's code was generated with the assistance of large language model (LLM) coding tools. A human maintainer directed the work, reviewed and tested the resulting behavior, and remains responsible for the project's design, security, maintenance, and defects. LLM-generated output is not treated as independently authoritative or as a substitute for review.
 
 ## License
 
